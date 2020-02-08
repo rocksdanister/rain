@@ -1,0 +1,78 @@
+{
+  "rainIntensity": {
+    "max": 100,
+    "min": 0,
+    "tick": 25,
+    "text": "Intensity",
+    "type": "slider",
+    "value": 39
+  },
+  "rainSpeed": {
+    "max": 100,
+    "min": 0,
+    "tick": 25,
+    "text": "Speed",
+    "type": "slider",
+    "value": 25
+  },
+  "brightness": {
+    "max": 100,
+    "min": 0,
+    "tick": 25,
+    "text": "Brightness",
+    "type": "slider",
+    "value": 76
+  },
+  "rainNormal": {
+    "max": 100,
+    "min": 0,
+    "tick": 25,
+    "text": "Normal",
+    "type": "slider",
+    "value": 50
+  },
+  "rainZoom": {
+    "max": 300,
+    "min": 10,
+    "tick": 25,
+    "text": "Zoom",
+    "type": "slider",
+    "value": 261
+  },
+  "overlayColor": {
+    "text": "Overlay Color",
+    "type": "color",
+    "value": "#C0C0C0"
+  },
+  "imgSelect": {
+    "type": "dropdown",
+    "value": 1,
+    "text": "Image",
+    "items": [
+      "City",
+      "Mountain",
+      "Forest",
+      "Street"
+    ]
+  },
+  "animateChk": {
+    "type": "checkbox",
+    "value": false,
+    "text": "Panning"
+  },
+  "postProcessingChk": {
+    "type": "checkbox",
+    "value": true,
+    "text": "Post Processing"
+  },
+  "lightningChk": {
+    "type": "checkbox",
+    "value": false,
+    "text": "Lightning"
+  },
+  "fpsLock": {
+    "type": "checkbox",
+    "value": true,
+    "text": "30FPS Lock"
+  }
+}
