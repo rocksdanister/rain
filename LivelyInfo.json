@@ -1,9 +1,9 @@
 {
   "AppVersion": "0.7.0.0",
-  "Title": "Rain [Customisable]",
+  "Title": "Rain v2 [Customisable]",
   "Thumbnail": "lively_t.jpg",
   "Preview": "lively_p.gif",
-  "Desc": "Shadertoy Heartfelt shader port.",
+  "Desc": "Shadertoy Heartfelt port, require Lively v0.9 or above.",
   "Author": "BigWIngs",
   "License": "MIT",
   "Contact": "https://github.com/rocksdanister/shadertoy-heartfelt",

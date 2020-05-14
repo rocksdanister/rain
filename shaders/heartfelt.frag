@@ -17,6 +17,8 @@ uniform float u_rainZoom;
 uniform vec3 u_overlayColor;
 uniform float u_islighting; 
 uniform float u_pp;
+uniform float u_blur;
+uniform float u_blurIterations;
 
 #define S(a, b, t) smoothstep(a, b, t)
 //#define CHEAP_NORMALS
@@ -114,6 +116,13 @@ vec2 Drops(vec2 uv, float t, float l0, float l1, float l2) {
     return vec2(c, max(m1.y*l0, m2.y*l1));
 }
 
+	//random no.
+	float N21(vec2 p) {
+		p = fract(p*vec2(123.34, 345.45));
+		p += dot(p, p + 34.345);
+		return fract(p.x*p.y);
+	}
+
 void main()
 {
  	vec2 uv = (gl_FragCoord.xy-.5*u_resolution.xy)/u_resolution.y;
@@ -191,8 +200,27 @@ void main()
     
     //float focus =  mix(maxBlur-c.y, minBlur, S(.1, .2, c.x));
     vec3 col = texture2D(u_tex0, UV+n).rgb;//, focus).rgb;
-    
-    
+    vec4 texCoord = vec4(UV.x + n.x, UV.y + n.y, 0, 1.0 * 25. * 0.01 / 7.);
+
+	if(u_blurIterations != 1.0)
+	{
+	    float blur = u_blur;
+	    blur *= 0.01;
+		float numSamples = u_blurIterations;
+		float a = N21(gl_FragCoord.xy)*6.2831;
+		for (int m = 0; m < 64; m++) {
+			if(m > int(u_blurIterations))
+				break;
+			vec2 offs = vec2(sin(a), cos(a))* blur;
+			float d = fract(sin((float(m) + 1.)*546.)*5424.);
+			d = sqrt(d);
+			offs *= d;
+			col += texture2D(u_tex0,  texCoord.xy + vec2(offs.x,offs.y)).xyz;
+			a++;
+		}
+		col /= numSamples;
+	}
+	
     #ifdef USE_POST_PROCESSING
     t = (T+3.)*.5;			// make time sync with first lightnoing
     if(int(u_pp) >= 1)				
@@ -216,7 +244,7 @@ void main()
     	fade *= S(102., 97., T);
     #endif
     
-    col *= fade*u_overlayColor;	// composite start and end fade
+    //col *= fade*u_overlayColor;	// composite start and end fade
     #endif
     
     gl_FragColor = vec4(col*u_brightness, 1);

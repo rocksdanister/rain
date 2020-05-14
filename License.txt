@@ -1,5 +1,5 @@
 Heartfelt - by Martijn Steinrucken aka BigWings - 2017
-Email:countfrolic@gmail.com Twitter:@The_ArtOfCode
+Twitter:@The_ArtOfCode
 License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 https://www.shadertoy.com/view/ltffzl
 
@@ -31,3 +31,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **********************************************************************************************
 
+Mountain Surrounded With Fog by Stephan Seeber from Pexels
+https://www.pexels.com/photo/mountain-surrounded-with-fog-1772973/
+
+City Lights Under Night Sky by Reynaldo #brigworkz Brigantty from Pexels
+https://www.pexels.com/photo/city-lights-under-night-sky-771881/

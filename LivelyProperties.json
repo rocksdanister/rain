@@ -5,7 +5,7 @@
     "tick": 25,
     "text": "Intensity",
     "type": "slider",
-    "value": 39
+    "value": 40
   },
   "rainSpeed": {
     "max": 100,
@@ -21,7 +21,7 @@
     "tick": 25,
     "text": "Brightness",
     "type": "slider",
-    "value": 76
+    "value": 75
   },
   "rainNormal": {
     "max": 100,
@@ -44,16 +44,31 @@
     "type": "color",
     "value": "#C0C0C0"
   },
-  "imgSelect": {
+   "imgSelect": {
+    "type": "folderDropdown",
+    "value": "mountain-surrounded-with-fog-1772973.jpg",
+    "text": "Image",
+    "filter": "*.jpg|*.png",
+    "folder": "wallpapers"
+  },
+  "blurQuality": {
     "type": "dropdown",
     "value": 1,
-    "text": "Image",
+    "text": "Blur Quality",
     "items": [
-      "City",
-      "Mountain",
-      "Forest",
-      "Street"
+      "Off",
+      "Low",
+      "High",
+      "Very High"
     ]
+  },
+  "blurIntensity": {
+    "max": 100,
+    "min": 0,
+    "tick": 25,
+    "text": "Blur Intensity",
+    "type": "slider",
+    "value": 50
   },
   "animateChk": {
     "type": "checkbox",
