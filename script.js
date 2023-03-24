@@ -71,24 +71,35 @@ function createWebUI() {
   gui.add(material.uniforms.u_brightness, "value", 0, 10, 0.01).name("Brightness");
   gui.add(material.uniforms.u_normal, "value", 0, 10, 0.01).name("Normal");
   gui.add(material.uniforms.u_zoom, "value", 0.1, 3.0, 0.01).name("Zoom");
-  gui.add(material.uniforms.u_blur_iterations, "value", 1, 64, 1).name("Blur Quality");
+  gui.add(material.uniforms.u_blur_iterations, "value", 16, 64, 16).name("Blur Quality");
   gui.add(material.uniforms.u_blur_intensity, "value", 0, 10, 0.01).name("Blur");
+  gui
+    .add(
+      {
+        picker: function () {
+          document.getElementById("filePicker").click();
+        },
+      },
+      "picker"
+    )
+    .name("Background");
   gui.add(material.uniforms.u_panning, "value").name("Panning");
   gui.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
   gui.add(material.uniforms.u_lightning, "value").name("Lightning");
   gui.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
-  gui.add(settings, "fps").name("FPS");
+  gui.add(settings, "fps", 30, 120, 15).name("Fps");
 }
 
-function createVideo(src) {
-  let htmlVideo = document.createElement("video");
-  htmlVideo.src = src;
-  htmlVideo.muted = true;
-  htmlVideo.loop = true;
-  htmlVideo.play();
-  return htmlVideo;
-}
+document.getElementById("filePicker").addEventListener("change", function () {
+  let file = this.files[0];
+  if (isImageFile(file)) {
+    material.uniforms.u_tex0.value = new THREE.TextureLoader().load(URL.createObjectURL(file));
+  } else if (isVideoFile(file)) {
+    material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(URL.createObjectURL(file)));
+  }
+});
 
+//parallax
 document.addEventListener("mousemove", function (event) {
   if (settings.parallaxVal == 0) return;
 
@@ -97,3 +108,21 @@ document.addEventListener("mousemove", function (event) {
 
   container.style.transform = `translateX(${x}px) translateY(${y}px) scale(1.09)`;
 });
+
+//helpers
+function isImageFile(file) {
+  return file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png";
+}
+
+function isVideoFile(file) {
+  return file.type == "video/mp4" || file.type == "video/webm";
+}
+
+function createHtmlVideo(src) {
+  let htmlVideo = document.createElement("video");
+  htmlVideo.src = src;
+  htmlVideo.muted = true;
+  htmlVideo.loop = true;
+  htmlVideo.play();
+  return htmlVideo;
+}
