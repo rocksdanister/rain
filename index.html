@@ -1,25 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Background</title>
-  </head>
-  <style>
-    body {
-      background-color: #000;
-      margin: 0px;
-      overflow: hidden;
-    }
-    #container {
-      transform: scale(1.09);
-    }
-  </style>
-  <body>
-    <div id="container"></div>
-    <input id="filePicker" type="file" accept=".jpg, .jpeg, .png, .mp4, .webm" style="visibility: hidden" />
+<script src="js/GlslCanvas.js"></script> 
 
-    <script src="js/three.min.js"></script>
-    <script src="js/dat.gui.min.js"></script>
-    <script src="js/script.js"></script>
-  </body>
-</html>
+<body style="margin:0;overflow:hidden">
+    <canvas 
+    id ="WebglOut"
+    class="glslCanvas" 
+    data-fragment-url="shaders\heartfelt.frag" 
+    style="position: absolute;width: 100%;height: 100%;" 
+    />    
+</body>
+
+<script type="text/javascript">
+
+ window.onload =()=>{
+  let canvas = document.querySelector('.glslCanvas');
+  canvas.setAttribute("width",window.innerWidth);
+  canvas.setAttribute("height",window.innerHeight);
+}
+
+
+function livelyPropertyListener(name, val)
+{
+	switch(name) {
+    case "blurIntensity":
+      glslCanvases[0].setUniform("u_blur",val/100);
+      break;
+    case "blurQuality":
+      if(val == 0)
+      {
+        glslCanvases[0].setUniform("u_blurIterations",1);
+      }
+      else if(val == 1)
+      {
+        glslCanvases[0].setUniform("u_blurIterations",16);
+      }
+      else if(val == 2)
+      {
+        glslCanvases[0].setUniform("u_blurIterations",32);
+      }
+      else if(val == 3)
+      {
+        glslCanvases[0].setUniform("u_blurIterations",64);
+      }
+      break;
+    case "rainIntensity":
+      glslCanvases[0].setUniform("u_rainintensity",val/100);
+      break;
+    case "rainSpeed":
+      glslCanvases[0].setUniform("u_speed",val/100);
+      break;
+    case "brightness":
+      glslCanvases[0].setUniform("u_brightness",val/100);
+      break;
+    case "rainNormal":
+      glslCanvases[0].setUniform("u_rainNormal",val/100);
+      break;
+    case "rainZoom":
+      glslCanvases[0].setUniform("u_rainZoom",val/100);
+      break;
+    case "overlayColor":
+      tmp = hexToRgb(val);
+      glslCanvases[0].setUniform("u_overlayColor", tmp.r/255, tmp.g/255, tmp.b/255);
+      break;
+    case "imgSelect":
+      glslCanvases[0].setUniform("u_tex0",val);
+      break;
+    case "animateChk": 
+      if(val == true)
+      {
+        glslCanvases[0].setUniform("u_animate",1.0);
+      }
+      else
+      {
+        glslCanvases[0].setUniform("u_animate",0.0);
+      }
+      break;
+    case "lightningChk":
+      if(val == true)
+      {
+        glslCanvases[0].setUniform("u_islighting",1.0);
+      }
+      else
+      {
+        glslCanvases[0].setUniform("u_islighting",0.0);
+      }
+      break;
+    case "postProcessingChk":
+      if(val == true)
+      {
+        glslCanvases[0].setUniform("u_pp",1.0);
+      }
+      else
+      {
+        glslCanvases[0].setUniform("u_pp",0.0);
+      }
+      break;
+    case "fpsLock":
+      if(val == true)
+      {
+        responseTime = 33;
+      }
+      else
+      {
+        responseTime = -1;
+      }
+      break;     
+  }
+}
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+</script>
