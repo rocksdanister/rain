@@ -1,10 +1,8 @@
-const gui = new dat.GUI();
-
 const container = document.getElementById("container");
 const clock = new THREE.Clock();
 let scene, camera, renderer, material;
 let fps30 = false;
-let settings = { fps: 30, parallax: true, parallaxVal: 5 };
+let settings = { fps: 30, parallaxVal: 5 };
 
 async function init() {
   renderer = new THREE.WebGLRenderer({
@@ -39,13 +37,35 @@ async function init() {
               gl_Position = vec4( position, 1.0 );    
           }
         `,
-    fragmentShader: await (await fetch("frag.glsl")).text(),
   });
+  material.fragmentShader = await (await fetch("frag.glsl")).text();
 
   const quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2, 1, 1), material);
   scene.add(quad);
+}
 
-  //Web UI
+window.addEventListener("resize", function (e) {
+  renderer.setSize(window.innerWidth, window.innerHeight, 2);
+
+  material.uniforms.u_resolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
+});
+
+function render() {
+  setTimeout(function () {
+    requestAnimationFrame(render);
+  }, 1000 / settings.fps);
+
+  material.uniforms.u_time.value = clock.getElapsedTime();
+
+  renderer.render(scene, camera);
+}
+
+init();
+render();
+createWebUI();
+
+function createWebUI() {
+  let gui = new dat.GUI();
   gui.add(material.uniforms.u_intensity, "value", 0, 10, 0.01).name("Intensity");
   gui.add(material.uniforms.u_speed, "value", 0, 10, 0.01).name("Speed");
   gui.add(material.uniforms.u_brightness, "value", 0, 10, 0.01).name("Brightness");
@@ -56,28 +76,9 @@ async function init() {
   gui.add(material.uniforms.u_panning, "value").name("Panning");
   gui.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
   gui.add(material.uniforms.u_lightning, "value").name("Lightning");
-  gui.add(settings, "fps").name("FPS"); // does not do anything
-  gui.add(settings, "parallax").name("Parallax");
+  gui.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
+  gui.add(settings, "fps").name("FPS");
 }
-
-window.addEventListener("resize", function (e) {
-  renderer.setSize(window.innerWidth, window.innerHeight, 2);
-
-  if (material != null) material.uniforms.u_resolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
-});
-
-function render() {
-  setTimeout(function () {
-    requestAnimationFrame(render);
-  }, 1000 / settings.fps);
-
-  if (material != null) material.uniforms.u_time.value = clock.getElapsedTime();
-
-  renderer.render(scene, camera);
-}
-
-init();
-render();
 
 function createVideo(src) {
   let htmlVideo = document.createElement("video");
@@ -89,11 +90,10 @@ function createVideo(src) {
 }
 
 document.addEventListener("mousemove", function (event) {
-  if (!settings.parallax) return;
+  if (settings.parallaxVal == 0) return;
 
-  const position = settings.parallaxVal;
-  const x = (window.innerWidth - event.pageX * position) / 90;
-  const y = (window.innerHeight - event.pageY * position) / 90;
+  const x = (window.innerWidth - event.pageX * settings.parallaxVal) / 90;
+  const y = (window.innerHeight - event.pageY * settings.parallaxVal) / 90;
 
   container.style.transform = `translateX(${x}px) translateY(${y}px) scale(1.09)`;
 });
