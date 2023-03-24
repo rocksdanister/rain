@@ -1,5 +1,5 @@
 const container = document.getElementById("container");
-const clock = new THREE.Clock();
+let clock = new THREE.Clock();
 const gui = new dat.GUI();
 
 let scene, camera, renderer, material;
@@ -17,7 +17,7 @@ async function init() {
 
   material = new THREE.ShaderMaterial({
     uniforms: {
-      u_time: { value: clock.getElapsedTime(), type: "f" },
+      u_time: { value: 0, type: "f" },
       u_intensity: { value: 0.4, type: "f" },
       u_speed: { value: 0.25, type: "f" },
       u_brightness: { value: 0.8, type: "f" },
@@ -57,7 +57,9 @@ function render() {
     requestAnimationFrame(render);
   }, 1000 / settings.fps);
 
-  material.uniforms.u_time.value = clock.getElapsedTime();
+  //Reset every 6hr
+  if (clock.getElapsedTime() > 21600) clock = new THREE.Clock();
+  material.uniforms.u_time.value = clock.getElapsedTime().toFixed(2);
 
   renderer.render(scene, camera);
 }
