@@ -165,23 +165,19 @@ void main() {
         col /= float(u_blur_iterations);
     }
 
+    t = (T + 3.) * .5;			// make time sync with first lightnoing
     if(u_post_processing) {
-        t = (T + 3.) * .5;			// make time sync with first lightnoing
-        if(int(1.) >= 1) {
-            float colFade = sin(t * .2) * .5 + .5;
-            col *= mix(vec3(1.), vec3(.8, .9, 1.3), colFade);	// subtle color shift
-        }
-        float fade = S(0., 10., T);							// fade in at the start
-
-        if(u_lightning) {
-            float lightning = sin(t * sin(t * 10.));				// lighting flicker
-            lightning *= pow(max(0., sin(t + sin(t))), 10.);		// lightning flash
-            col *= 1. + lightning * fade * mix(1., .1, 0.);	// composite lightning
-        }
-
-        col *= 1. - dot(UV -= .5, UV) * 1.; // vignette
-        //col *= fade*u_overlayColor;	// composite start and end fade
+        //float colFade = sin(t * .2) * .5 + .5;
+        col *= mix(vec3(1.), vec3(.8, .9, 1.3), 1.);	// subtle color shift
     }
+    float fade = S(0., 10., T);							// fade in at the start
+
+    if(u_lightning) {
+        float lightning = sin(t * sin(t * 10.));				// lighting flicker
+        lightning *= pow(max(0., sin(t + sin(t))), 10.);		// lightning flash
+        col *= 1. + lightning * fade * mix(1., .1, 0.);	// composite lightning
+    }
+    col *= 1. - dot(UV -= .5, UV) * 1.; // vignette
 
     gl_FragColor = vec4(col * u_brightness, 1);
 }

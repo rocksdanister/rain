@@ -28,7 +28,7 @@ async function init() {
       u_panning: { value: false, type: "b" },
       u_post_processing: { value: true, type: "b" },
       u_lightning: { value: false, type: "b" },
-      u_tex0: { value: new THREE.TextureLoader().load("/media/image.jpg"), type: "t" },
+      u_tex0: { value: new THREE.TextureLoader().load("media/image.jpg"), type: "t" },
       //u_tex0: { value: new THREE.VideoTexture(createVideo("media/video.mp4")), type: "t" },
       u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
     },
