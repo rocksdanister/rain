@@ -1,5 +1,7 @@
 const container = document.getElementById("container");
 const clock = new THREE.Clock();
+const gui = new dat.GUI();
+
 let scene, camera, renderer, material;
 let fps30 = false;
 let settings = { fps: 30, parallaxVal: 5 };
@@ -26,7 +28,7 @@ async function init() {
       u_panning: { value: false, type: "b" },
       u_post_processing: { value: true, type: "b" },
       u_lightning: { value: false, type: "b" },
-      u_tex0: { value: new THREE.TextureLoader().load("media/image.jpg"), type: "t" },
+      u_tex0: { value: new THREE.TextureLoader().load("/media/image.jpg"), type: "t" },
       //u_tex0: { value: new THREE.VideoTexture(createVideo("media/video.mp4")), type: "t" },
       u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
     },
@@ -40,7 +42,7 @@ async function init() {
   });
   material.fragmentShader = await (await fetch("shaders/rain.frag")).text();
 
-  const quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2, 1, 1), material);
+  const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 1, 1), material);
   scene.add(quad);
 }
 
@@ -64,15 +66,70 @@ init();
 render();
 createWebUI();
 
+//lively
+function livelyPropertyListener(name, val) {
+  switch (name) {
+    case "blurIntensity":
+      material.uniforms.u_blur_intensity.value = val / 100;
+      break;
+    case "blurQuality":
+      material.uniforms.u_blur_iterations.value = [1, 16, 32, 64][val];
+      break;
+    case "rainIntensity":
+      material.uniforms.u_intensity.value = val / 100;
+      break;
+    case "rainSpeed":
+      material.uniforms.u_speed.value = val / 100;
+      break;
+    case "brightness":
+      material.uniforms.u_brightness.value = val / 100;
+      break;
+    case "rainNormal":
+      material.uniforms.u_normal.value = val / 100;
+      break;
+    case "rainZoom":
+      material.uniforms.u_zoom.value = val / 100;
+      break;
+    case "mediaSelect":
+      {
+        let ext = getExtension(val);
+        if (ext == "jpg" || ext == "jpeg" || ext == "png")
+          material.uniforms.u_tex0.value = new THREE.TextureLoader().load(val);
+        else if (ext == "webm") material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(val));
+      }
+      break;
+    case "animateChk":
+      material.uniforms.u_panning.value = val;
+      break;
+    case "lightningChk":
+      material.uniforms.u_lightning.value = val;
+      break;
+    case "postProcessingChk":
+      material.uniforms.u_post_processing.value = val;
+      break;
+    case "parallaxIntensity":
+      settings.parallaxVal = val;
+      break;
+    case "fpsLock":
+      settings.fps = val ? 30 : 60;
+      break;
+    case "debug":
+      if (val) gui.show();
+      else gui.hide();
+      break;
+  }
+}
+
+//web
 function createWebUI() {
-  let gui = new dat.GUI();
   gui.add(material.uniforms.u_intensity, "value", 0, 10, 0.01).name("Intensity");
   gui.add(material.uniforms.u_speed, "value", 0, 10, 0.01).name("Speed");
   gui.add(material.uniforms.u_brightness, "value", 0, 10, 0.01).name("Brightness");
   gui.add(material.uniforms.u_normal, "value", 0, 10, 0.01).name("Normal");
   gui.add(material.uniforms.u_zoom, "value", 0.1, 3.0, 0.01).name("Zoom");
-  gui.add(material.uniforms.u_blur_iterations, "value", 16, 64, 16).name("Blur Quality");
+  gui.add(material.uniforms.u_blur_iterations, "value", 1, 64, 1).name("Blur Quality");
   gui.add(material.uniforms.u_blur_intensity, "value", 0, 10, 0.01).name("Blur");
+  gui.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
   gui
     .add(
       {
@@ -86,15 +143,25 @@ function createWebUI() {
   gui.add(material.uniforms.u_panning, "value").name("Panning");
   gui.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
   gui.add(material.uniforms.u_lightning, "value").name("Lightning");
-  gui.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
   gui.add(settings, "fps", 30, 120, 15).name("Fps");
+  gui
+    .add(
+      {
+        source: function () {
+          window.open("https://github.com/rocksdanister/rain");
+        },
+      },
+      "source"
+    )
+    .name("Source code");
+  gui.close();
 }
 
 document.getElementById("filePicker").addEventListener("change", function () {
   let file = this.files[0];
-  if (isImageFile(file)) {
+  if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
     material.uniforms.u_tex0.value = new THREE.TextureLoader().load(URL.createObjectURL(file));
-  } else if (isVideoFile(file)) {
+  } else if (file.type == "video/mp4" || file.type == "video/webm") {
     material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(URL.createObjectURL(file)));
   }
 });
@@ -110,12 +177,8 @@ document.addEventListener("mousemove", function (event) {
 });
 
 //helpers
-function isImageFile(file) {
-  return file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png";
-}
-
-function isVideoFile(file) {
-  return file.type == "video/mp4" || file.type == "video/webm";
+function getExtension(filePath) {
+  return filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length) || filePath;
 }
 
 function createHtmlVideo(src) {
