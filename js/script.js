@@ -141,11 +141,11 @@ function createWebUI() {
       },
       "picker"
     )
-    .name("Background");
+    .name("Change background");
   gui.add(material.uniforms.u_panning, "value").name("Panning");
   gui.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
   gui.add(material.uniforms.u_lightning, "value").name("Lightning");
-  gui.add(settings, "fps", 30, 120, 15).name("Fps");
+  gui.add(settings, "fps", 15, 120, 15).name("Fps");
   gui
   .add(
     {

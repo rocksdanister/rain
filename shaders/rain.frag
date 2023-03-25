@@ -120,8 +120,8 @@ float N21(vec2 p) {
 void main() {
     vec2 uv = (gl_FragCoord.xy - .5 * u_resolution.xy) / u_resolution.y;
     vec2 UV = gl_FragCoord.xy / u_resolution.xy;//-.5;
-    vec3 M = vec3(0);// iMouse.xyz/iResolution.xyz;
-    float T = u_time + M.x * 2.;
+    //vec3 M = vec3(0);// iMouse.xyz/iResolution.xyz;
+    float T = u_time;// + M.x * 2.;
 
     float t = T * .2 * u_speed;
 
