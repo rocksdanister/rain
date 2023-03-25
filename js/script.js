@@ -4,7 +4,7 @@ const gui = new dat.GUI();
 
 let scene, camera, renderer, material;
 let fps30 = false;
-let settings = { fps: 30, parallaxVal: 5 };
+let settings = { fps: 30, parallaxVal: 1 };
 
 async function init() {
   renderer = new THREE.WebGLRenderer({
@@ -24,7 +24,7 @@ async function init() {
       u_normal: { value: 0.5, type: "f" },
       u_zoom: { value: 2.61, type: "f" },
       u_blur_intensity: { value: 0.5, type: "f" },
-      u_blur_iterations: { value: 32, type: "i" },
+      u_blur_iterations: { value: 16, type: "i" },
       u_panning: { value: false, type: "b" },
       u_post_processing: { value: true, type: "b" },
       u_lightning: { value: false, type: "b" },
@@ -57,7 +57,7 @@ function render() {
     requestAnimationFrame(render);
   }, 1000 / settings.fps);
 
-  //Reset every 6hr
+  //reset every 6hr
   if (clock.getElapsedTime() > 21600) clock = new THREE.Clock();
   material.uniforms.u_time.value = clock.getElapsedTime().toFixed(2);
 
@@ -146,6 +146,16 @@ function createWebUI() {
   gui.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
   gui.add(material.uniforms.u_lightning, "value").name("Lightning");
   gui.add(settings, "fps", 30, 120, 15).name("Fps");
+  gui
+  .add(
+    {
+      lively: function () {
+        window.open("https://www.rocksdanister.com/lively");
+      },
+    },
+    "lively"
+  )
+  .name("Try it on your desktop");
   gui
     .add(
       {
