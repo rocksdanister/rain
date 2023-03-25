@@ -18,7 +18,6 @@ async function init() {
   material = new THREE.ShaderMaterial({
     uniforms: {
       u_tex0: { type: "t" },
-      u_tex0_resolution: { type: "v2" },
       u_time: { value: 0, type: "f" },
       u_intensity: { value: 0.4, type: "f" },
       u_speed: { value: 0.25, type: "f" },
@@ -32,6 +31,7 @@ async function init() {
       u_lightning: { value: false, type: "b" },
       u_texture_fill: { value: true, type: "b" },
       u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight), type: "v2" },
+      u_tex0_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight), type: "v2" },
     },
     vertexShader: `
           varying vec2 vUv;        
