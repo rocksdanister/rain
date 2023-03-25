@@ -71,7 +71,7 @@
     "tick": 1,
     "text": "Parallax",
     "type": "slider",
-    "value": 5
+    "value": 1
   },
   "animateChk": {
     "type": "checkbox",
