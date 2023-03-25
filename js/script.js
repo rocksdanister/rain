@@ -17,6 +17,8 @@ async function init() {
 
   material = new THREE.ShaderMaterial({
     uniforms: {
+      u_tex0: { type: "t" },
+      u_tex0_resolution: { type: "v2" },
       u_time: { value: 0, type: "f" },
       u_intensity: { value: 0.4, type: "f" },
       u_speed: { value: 0.25, type: "f" },
@@ -28,9 +30,8 @@ async function init() {
       u_panning: { value: false, type: "b" },
       u_post_processing: { value: true, type: "b" },
       u_lightning: { value: false, type: "b" },
-      u_tex0: { value: new THREE.TextureLoader().load("media/image.jpg"), type: "t" },
-      //u_tex0: { value: new THREE.VideoTexture(createVideo("media/video.mp4")), type: "t" },
-      u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+      u_texture_fill: { value: true, type: "b" },
+      u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight), type: "v2" },
     },
     vertexShader: `
           varying vec2 vUv;        
@@ -41,6 +42,11 @@ async function init() {
         `,
   });
   material.fragmentShader = await (await fetch("shaders/rain.frag")).text();
+
+  new THREE.TextureLoader().load("media/image.jpg", function (tex) {
+    material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
+    material.uniforms.u_tex0.value = tex;
+  });
 
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 1, 1), material);
   scene.add(quad);
@@ -95,10 +101,32 @@ function livelyPropertyListener(name, val) {
     case "mediaSelect":
       {
         let ext = getExtension(val);
-        if (ext == "jpg" || ext == "jpeg" || ext == "png")
-          material.uniforms.u_tex0.value = new THREE.TextureLoader().load(val);
-        else if (ext == "webm") material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(val));
+        if (ext == "jpg" || ext == "jpeg" || ext == "png") {
+          new THREE.TextureLoader().load(val, function (tex) {
+            //console.log(tex.image.width, tex.image.height);
+            material.uniforms.u_tex0.value = tex;
+            material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
+          });
+        } else if (ext == "webm") {
+          let video = createHtmlVideo(val);
+          let videoTexture = new THREE.VideoTexture(video);
+          video.addEventListener(
+            "loadedmetadata",
+            function (e) {
+              //console.log(videoTexture.image.videoWidth, videoTexture.image.videoHeight);
+              material.uniforms.u_tex0_resolution.value = new THREE.Vector2(
+                videoTexture.image.videoWidth,
+                videoTexture.image.videoHeight
+              );
+            },
+            false
+          );
+          material.uniforms.u_tex0.value = videoTexture;
+        }
       }
+      break;
+    case "mediaScaling":
+      material.uniforms.u_texture_fill.value = [false, true][val];
       break;
     case "animateChk":
       material.uniforms.u_panning.value = val;
@@ -124,39 +152,44 @@ function livelyPropertyListener(name, val) {
 
 //web
 function createWebUI() {
-  gui.add(material.uniforms.u_intensity, "value", 0, 10, 0.01).name("Intensity");
-  gui.add(material.uniforms.u_speed, "value", 0, 10, 0.01).name("Speed");
-  gui.add(material.uniforms.u_brightness, "value", 0, 10, 0.01).name("Brightness");
-  gui.add(material.uniforms.u_normal, "value", 0, 10, 0.01).name("Normal");
-  gui.add(material.uniforms.u_zoom, "value", 0.1, 3.0, 0.01).name("Zoom");
-  gui.add(material.uniforms.u_blur_iterations, "value", 1, 64, 1).name("Blur Quality");
-  gui.add(material.uniforms.u_blur_intensity, "value", 0, 10, 0.01).name("Blur");
-  gui.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
-  gui
-    .add(
-      {
-        picker: function () {
-          document.getElementById("filePicker").click();
-        },
-      },
-      "picker"
-    )
-    .name("Change background");
-  gui.add(material.uniforms.u_panning, "value").name("Panning");
-  gui.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
-  gui.add(material.uniforms.u_lightning, "value").name("Lightning");
-  gui.add(settings, "fps", 15, 120, 15).name("Fps");
-  gui
-  .add(
+  let rain = gui.addFolder("Rain");
+  let bg = gui.addFolder("Background");
+  let misc = gui.addFolder("More");
+  rain.open();
+  bg.open();
+  misc.open();
+  rain.add(material.uniforms.u_intensity, "value", 0, 10, 0.01).name("Intensity");
+  rain.add(material.uniforms.u_speed, "value", 0, 10, 0.01).name("Speed");
+  rain.add(material.uniforms.u_brightness, "value", 0, 10, 0.01).name("Brightness");
+  rain.add(material.uniforms.u_normal, "value", 0, 10, 0.01).name("Normal");
+  rain.add(material.uniforms.u_zoom, "value", 0.1, 3.0, 0.01).name("Zoom");
+  rain.add(material.uniforms.u_lightning, "value").name("Lightning");
+  bg.add(
     {
-      lively: function () {
-        window.open("https://www.rocksdanister.com/lively");
+      picker: function () {
+        document.getElementById("filePicker").click();
       },
     },
-    "lively"
-  )
-  .name("Try it on your desktop");
-  gui
+    "picker"
+  ).name("Change Background");
+  bg.add(material.uniforms.u_blur_iterations, "value", 1, 64, 1).name("Blur Quality");
+  bg.add(material.uniforms.u_blur_intensity, "value", 0, 10, 0.01).name("Blur");
+  bg.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
+  bg.add(material.uniforms.u_texture_fill, "value").name("Scale to Fill");
+  bg.add(material.uniforms.u_panning, "value").name("Panning");
+  bg.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
+  misc.add(settings, "fps", 15, 120, 15).name("Fps");
+  misc
+    .add(
+      {
+        lively: function () {
+          window.open("https://www.rocksdanister.com/lively");
+        },
+      },
+      "lively"
+    )
+    .name("Try it on your desktop");
+  misc
     .add(
       {
         source: function () {
@@ -172,9 +205,25 @@ function createWebUI() {
 document.getElementById("filePicker").addEventListener("change", function () {
   let file = this.files[0];
   if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
-    material.uniforms.u_tex0.value = new THREE.TextureLoader().load(URL.createObjectURL(file));
+    new THREE.TextureLoader().load(URL.createObjectURL(file), function (tex) {
+      material.uniforms.u_tex0.value = tex;
+      material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
+    });
   } else if (file.type == "video/mp4" || file.type == "video/webm") {
-    material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(URL.createObjectURL(file)));
+    //material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(URL.createObjectURL(file)));
+    let video = createHtmlVideo(URL.createObjectURL(file));
+    let videoTexture = new THREE.VideoTexture(video);
+    video.addEventListener(
+      "loadedmetadata",
+      function (e) {
+        material.uniforms.u_tex0_resolution.value = new THREE.Vector2(
+          videoTexture.image.videoWidth,
+          videoTexture.image.videoHeight
+        );
+      },
+      false
+    );
+    material.uniforms.u_tex0.value = videoTexture;
   }
 });
 

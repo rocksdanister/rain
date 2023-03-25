@@ -39,23 +39,24 @@
     "type": "slider",
     "value": 261
   },
-   "mediaSelect": {
+  "mediaSelect": {
     "type": "folderDropdown",
     "value": "image.jpg",
-    "text": "Media",
+    "text": "Background (.jpg, .png, .webm)",
     "filter": "*.jpg|*.jpeg|*.png|*.webm",
     "folder": "media"
+  },
+  "mediaScaling": {
+    "type": "dropdown",
+    "value": 1,
+    "text": "Scaling",
+    "items": ["Stretch", "Fill"]
   },
   "blurQuality": {
     "type": "dropdown",
     "value": 1,
     "text": "Blur Quality",
-    "items": [
-      "Off",
-      "Low",
-      "High",
-      "Very High"
-    ]
+    "items": ["Off", "Low", "High", "Very High"]
   },
   "blurIntensity": {
     "max": 100,
