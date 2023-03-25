@@ -4,6 +4,7 @@ precision highp float;
 
 varying vec2 vUv;
 uniform sampler2D u_tex0;
+uniform vec2 u_tex0_resolution;
 uniform float u_time;
 uniform vec2 u_resolution;
 uniform float u_speed;
@@ -16,6 +17,7 @@ uniform int u_blur_iterations;
 uniform bool u_panning;
 uniform bool u_post_processing;
 uniform bool u_lightning;
+uniform bool u_texture_fill;
 
 #define S(a, b, t) smoothstep(a, b, t)
 //#define USE_POST_PROCESSING
@@ -122,6 +124,17 @@ void main() {
     vec2 UV = gl_FragCoord.xy / u_resolution.xy;//-.5;
     //vec3 M = vec3(0);// iMouse.xyz/iResolution.xyz;
     float T = u_time;// + M.x * 2.;
+
+    if(u_texture_fill) {
+        float screenAspect = u_resolution.x / u_resolution.y;
+        float texAspect = u_tex0_resolution.x / u_tex0_resolution.y;
+        float scaleX = 1., scaleY = 1.;
+        if(u_tex0_resolution.x > u_tex0_resolution.y)
+            scaleX = 1. / (texAspect / screenAspect);
+        else
+            scaleY = texAspect / screenAspect;
+        UV = vec2(scaleX, scaleY) * (UV - 0.5) + 0.5;
+    }
 
     float t = T * .2 * u_speed;
 
