@@ -188,7 +188,7 @@ function createWebUI() {
       },
       "lively"
     )
-    .name("Try it on your desktop");
+    .name("Try It On Your Desktop!");
   misc
     .add(
       {
@@ -198,7 +198,7 @@ function createWebUI() {
       },
       "source"
     )
-    .name("Source code");
+    .name("Source Code");
   gui.close();
 }
 
