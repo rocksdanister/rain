@@ -127,12 +127,12 @@ void main() {
 
     if(u_texture_fill) {
         float screenAspect = u_resolution.x / u_resolution.y;
-        float texAspect = u_tex0_resolution.x / u_tex0_resolution.y;
+        float textureAspect = u_tex0_resolution.x / u_tex0_resolution.y;
         float scaleX = 1., scaleY = 1.;
-        if(screenAspect < 1.)
-            scaleX = screenAspect / texAspect;
+        if(textureAspect > screenAspect )
+            scaleX = screenAspect / textureAspect;
         else
-            scaleY = texAspect / screenAspect;
+            scaleY = textureAspect / screenAspect;
         UV = vec2(scaleX, scaleY) * (UV - 0.5) + 0.5;
     }
 

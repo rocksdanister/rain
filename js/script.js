@@ -160,7 +160,7 @@ function createWebUI() {
   misc.open();
   rain.add(material.uniforms.u_intensity, "value", 0, 10, 0.01).name("Intensity");
   rain.add(material.uniforms.u_speed, "value", 0, 10, 0.01).name("Speed");
-  rain.add(material.uniforms.u_brightness, "value", 0, 10, 0.01).name("Brightness");
+  rain.add(material.uniforms.u_brightness, "value", 0, 1, 0.01).name("Brightness");
   rain.add(material.uniforms.u_normal, "value", 0, 10, 0.01).name("Normal");
   rain.add(material.uniforms.u_zoom, "value", 0.1, 3.0, 0.01).name("Zoom");
   rain.add(material.uniforms.u_lightning, "value").name("Lightning");

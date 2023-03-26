@@ -2,7 +2,6 @@
   "rainIntensity": {
     "max": 100,
     "min": 0,
-    "tick": 25,
     "text": "Intensity",
     "type": "slider",
     "value": 40
@@ -10,7 +9,6 @@
   "rainSpeed": {
     "max": 100,
     "min": 0,
-    "tick": 25,
     "text": "Speed",
     "type": "slider",
     "value": 25
@@ -18,7 +16,6 @@
   "brightness": {
     "max": 100,
     "min": 0,
-    "tick": 25,
     "text": "Brightness",
     "type": "slider",
     "value": 75
@@ -26,7 +23,6 @@
   "rainNormal": {
     "max": 100,
     "min": 0,
-    "tick": 25,
     "text": "Normal",
     "type": "slider",
     "value": 50
@@ -34,7 +30,6 @@
   "rainZoom": {
     "max": 300,
     "min": 10,
-    "tick": 25,
     "text": "Zoom",
     "type": "slider",
     "value": 261
@@ -61,7 +56,6 @@
   "blurIntensity": {
     "max": 100,
     "min": 0,
-    "tick": 25,
     "text": "Blur Intensity",
     "type": "slider",
     "value": 50
@@ -69,7 +63,6 @@
   "parallaxIntensity": {
     "max": 5,
     "min": 0,
-    "tick": 1,
     "text": "Parallax",
     "type": "slider",
     "value": 1
