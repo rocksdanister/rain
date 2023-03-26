@@ -21,6 +21,7 @@ uniform bool u_texture_fill;
 
 #define S(a, b, t) smoothstep(a, b, t)
 //#define USE_POST_PROCESSING
+//#define CHEAP_NORMALS
 
 vec3 N13(float p) {
     //  from DAVE HOSKINS
@@ -122,15 +123,14 @@ float N21(vec2 p) {
 void main() {
     vec2 uv = (gl_FragCoord.xy - .5 * u_resolution.xy) / u_resolution.y;
     vec2 UV = gl_FragCoord.xy / u_resolution.xy;//-.5;
-    //vec3 M = vec3(0);// iMouse.xyz/iResolution.xyz;
-    float T = u_time;// + M.x * 2.;
+    float T = u_time;
 
     if(u_texture_fill) {
         float screenAspect = u_resolution.x / u_resolution.y;
         float texAspect = u_tex0_resolution.x / u_tex0_resolution.y;
         float scaleX = 1., scaleY = 1.;
-        if(u_tex0_resolution.x > u_tex0_resolution.y)
-            scaleX = 1. / (texAspect / screenAspect);
+        if(screenAspect < 1.)
+            scaleX = screenAspect / texAspect;
         else
             scaleY = texAspect / screenAspect;
         UV = vec2(scaleX, scaleY) * (UV - 0.5) + 0.5;
@@ -138,7 +138,7 @@ void main() {
 
     float t = T * .2 * u_speed;
 
-    float rainAmount = u_intensity;//0.5;//iMouse.z>0. ? M.y : sin(T*.05)*.3+.7;
+    float rainAmount = u_intensity;
 
     float zoom = u_panning ? -cos(T * .2) : 0.;
     uv *= (.7 + zoom * .3) * u_zoom;
@@ -148,7 +148,7 @@ void main() {
     float layer2 = S(.0, .5, rainAmount);
 
     vec2 c = Drops(uv, t, staticDrops, layer1, layer2);
-   #ifdef CHEAP_NORMALS
+    #ifdef CHEAP_NORMALS
     vec2 n = vec2(dFdx(c.x), dFdy(c.x));// cheap normals (3x cheaper, but 2 times shittier ;))
     #else
     vec2 e = vec2(.001, 0.) * u_normal;
@@ -157,8 +157,7 @@ void main() {
     vec2 n = vec2(cx - c.x, cy - c.x);		// expensive normals
     #endif
 
-    //float focus =  mix(maxBlur-c.y, minBlur, S(.1, .2, c.x));
-    vec3 col = texture2D(u_tex0, UV + n).rgb;//, focus).rgb;
+    vec3 col = texture2D(u_tex0, UV + n).rgb;
     vec4 texCoord = vec4(UV.x + n.x, UV.y + n.y, 0, 1.0 * 25. * 0.01 / 7.);
 
     if(u_blur_iterations != 1) {
