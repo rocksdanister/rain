@@ -65,7 +65,7 @@ function render() {
 
   //reset every 6hr
   if (clock.getElapsedTime() > 21600) clock = new THREE.Clock();
-  material.uniforms.u_time.value = clock.getElapsedTime().toFixed(2);
+  material.uniforms.u_time.value = clock.getElapsedTime();
 
   renderer.render(scene, camera);
 }
@@ -178,7 +178,7 @@ function createWebUI() {
   bg.add(material.uniforms.u_texture_fill, "value").name("Scale to Fill");
   bg.add(material.uniforms.u_panning, "value").name("Panning");
   bg.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
-  misc.add(settings, "fps", 15, 120, 15).name("Fps");
+  misc.add(settings, "fps", 15, 120, 15).name("FPS");
   misc
     .add(
       {
