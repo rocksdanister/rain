@@ -3,8 +3,8 @@ let clock = new THREE.Clock();
 const gui = new dat.GUI();
 
 let scene, camera, renderer, material;
-let fps30 = false;
 let settings = { fps: 30, parallaxVal: 1 };
+let videoTexture;
 
 async function init() {
   renderer = new THREE.WebGLRenderer({
@@ -108,8 +108,9 @@ function livelyPropertyListener(name, val) {
             material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
           });
         } else if (ext == "webm") {
+          videoTexture?.dispose();
           let video = createHtmlVideo(val);
-          let videoTexture = new THREE.VideoTexture(video);
+          videoTexture = new THREE.VideoTexture(video);
           video.addEventListener(
             "loadedmetadata",
             function (e) {
@@ -210,9 +211,9 @@ document.getElementById("filePicker").addEventListener("change", function () {
       material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
     });
   } else if (file.type == "video/mp4" || file.type == "video/webm") {
-    //material.uniforms.u_tex0.value = new THREE.VideoTexture(createHtmlVideo(URL.createObjectURL(file)));
+    videoTexture?.dispose();
     let video = createHtmlVideo(URL.createObjectURL(file));
-    let videoTexture = new THREE.VideoTexture(video);
+    videoTexture = new THREE.VideoTexture(video);
     video.addEventListener(
       "loadedmetadata",
       function (e) {
