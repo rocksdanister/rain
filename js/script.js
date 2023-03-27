@@ -104,9 +104,8 @@ function livelyPropertyListener(name, val) {
         if (ext == "jpg" || ext == "jpeg" || ext == "png") {
           disposeVideoElement(videoElement);
           material.uniforms.u_tex0.value?.dispose();
-          
+
           new THREE.TextureLoader().load(val, function (tex) {
-            material.uniforms.u_tex0.value?.dispose();
             material.uniforms.u_tex0.value = tex;
             material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
           });
@@ -126,7 +125,6 @@ function livelyPropertyListener(name, val) {
             },
             false
           );
-          material.uniforms.u_tex0.value?.dispose();
           material.uniforms.u_tex0.value = videoTexture;
         }
       }
