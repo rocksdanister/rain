@@ -1,7 +1,7 @@
 # Rainy Window
 <img src="preview.gif" width="300" />
 
-Rainy Window shader wallpaper for [Lively Wallpaper](https://github.com/rocksdanister/lively)
+Animated Rainy Window wallpaper for [Lively Wallpaper](https://github.com/rocksdanister/lively)
 
 [Download](https://github.com/rocksdanister/rain/releases)
 
@@ -9,7 +9,7 @@ Rainy Window shader wallpaper for [Lively Wallpaper](https://github.com/rocksdan
 
 #### Features
 - Custom image or video background.
-- Rain particle intensity, speed and size control and lightning toggle.
+- Rain particle intensity, speed, size control and lightning toggle.
 - Background color temperature (post processing.)
 - Background panning animation.
 - Background mouse parallax.
