@@ -101,21 +101,17 @@ function livelyPropertyListener(name, val) {
     case "mediaSelect":
       {
         let ext = getExtension(val);
+        disposeVideoElement(videoElement);
+        material.uniforms.u_tex0.value?.dispose();
         if (ext == "jpg" || ext == "jpeg" || ext == "png") {
-          disposeVideoElement(videoElement);
-          material.uniforms.u_tex0.value?.dispose();
-
           new THREE.TextureLoader().load(val, function (tex) {
             material.uniforms.u_tex0.value = tex;
             material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
           });
         } else if (ext == "webm") {
-          disposeVideoElement(videoElement);
-          material.uniforms.u_tex0.value?.dispose();
-
           videoElement = createVideoElement(val);
-          let videoTexture = new THREE.VideoTexture(video);
-          video.addEventListener(
+          let videoTexture = new THREE.VideoTexture(videoElement);
+          videoElement.addEventListener(
             "loadedmetadata",
             function (e) {
               material.uniforms.u_tex0_resolution.value = new THREE.Vector2(
