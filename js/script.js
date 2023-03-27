@@ -209,6 +209,7 @@ function createWebUI() {
 let toggle = false;
 
 document.getElementById("filePicker").addEventListener("change", function () {
+  if (this.files[0] === undefined) return;
   let file = this.files[0];
   if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
     disposeVideoElement(videoElement);
@@ -256,7 +257,7 @@ function getExtension(filePath) {
 function createVideoElement(src) {
   let htmlVideo = document.createElement("video");
   htmlVideo.src = src;
-  //htmlVideo.muted = true;
+  htmlVideo.muted = true;
   htmlVideo.loop = true;
   htmlVideo.play();
   return htmlVideo;
