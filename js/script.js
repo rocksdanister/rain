@@ -4,7 +4,7 @@ const gui = new dat.GUI();
 
 let scene, camera, renderer, material;
 let settings = { fps: 30, parallaxVal: 1 };
-let videoTexture;
+let videoElement;
 
 async function init() {
   renderer = new THREE.WebGLRenderer({
@@ -102,19 +102,22 @@ function livelyPropertyListener(name, val) {
       {
         let ext = getExtension(val);
         if (ext == "jpg" || ext == "jpeg" || ext == "png") {
+          disposeVideoElement(videoElement);
+          material.uniforms.u_tex0.value?.dispose();
+
           new THREE.TextureLoader().load(val, function (tex) {
-            //console.log(tex.image.width, tex.image.height);
             material.uniforms.u_tex0.value = tex;
             material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
           });
         } else if (ext == "webm") {
-          videoTexture?.dispose();
-          let video = createHtmlVideo(val);
-          videoTexture = new THREE.VideoTexture(video);
+          disposeVideoElement(videoElement);
+          material.uniforms.u_tex0.value?.dispose();
+
+          videoElement = createVideoElement(val);
+          let videoTexture = new THREE.VideoTexture(video);
           video.addEventListener(
             "loadedmetadata",
             function (e) {
-              //console.log(videoTexture.image.videoWidth, videoTexture.image.videoHeight);
               material.uniforms.u_tex0_resolution.value = new THREE.Vector2(
                 videoTexture.image.videoWidth,
                 videoTexture.image.videoHeight
@@ -203,18 +206,25 @@ function createWebUI() {
   gui.close();
 }
 
+let toggle = false;
+
 document.getElementById("filePicker").addEventListener("change", function () {
   let file = this.files[0];
   if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
+    disposeVideoElement(videoElement);
+    material.uniforms.u_tex0.value?.dispose();
+
     new THREE.TextureLoader().load(URL.createObjectURL(file), function (tex) {
       material.uniforms.u_tex0.value = tex;
       material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
     });
   } else if (file.type == "video/mp4" || file.type == "video/webm") {
-    videoTexture?.dispose();
-    let video = createHtmlVideo(URL.createObjectURL(file));
-    videoTexture = new THREE.VideoTexture(video);
-    video.addEventListener(
+    disposeVideoElement(videoElement);
+    material.uniforms.u_tex0.value?.dispose();
+
+    videoElement = createVideoElement(URL.createObjectURL(file));
+    let videoTexture = new THREE.VideoTexture(videoElement);
+    videoElement.addEventListener(
       "loadedmetadata",
       function (e) {
         material.uniforms.u_tex0_resolution.value = new THREE.Vector2(
@@ -243,11 +253,20 @@ function getExtension(filePath) {
   return filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length) || filePath;
 }
 
-function createHtmlVideo(src) {
+function createVideoElement(src) {
   let htmlVideo = document.createElement("video");
   htmlVideo.src = src;
-  htmlVideo.muted = true;
+  //htmlVideo.muted = true;
   htmlVideo.loop = true;
   htmlVideo.play();
   return htmlVideo;
+}
+
+//ref: https://stackoverflow.com/questions/3258587/how-to-properly-unload-destroy-a-video-element
+function disposeVideoElement(video) {
+  if (video != null && video.hasAttribute("src")) {
+    video.pause();
+    video.removeAttribute("src"); // empty source
+    video.load();
+  }
 }
