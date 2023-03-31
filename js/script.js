@@ -74,7 +74,8 @@ init();
 render();
 createWebUI();
 
-//lively
+//lively api
+//docs: https://github.com/rocksdanister/lively/wiki/Web-Guide-IV-:-Interaction
 function livelyPropertyListener(name, val) {
   switch (name) {
     case "blurIntensity":
@@ -177,7 +178,7 @@ function createWebUI() {
   bg.add(settings, "parallaxVal", 0, 5, 1).name("Parallax");
   bg.add(material.uniforms.u_texture_fill, "value").name("Scale to Fill");
   bg.add(material.uniforms.u_panning, "value").name("Panning");
-  bg.add(material.uniforms.u_post_processing, "value").name("Post Porcessing");
+  bg.add(material.uniforms.u_post_processing, "value").name("Post Processing");
   misc.add(settings, "fps", 15, 120, 15).name("FPS");
   misc
     .add(
@@ -201,8 +202,6 @@ function createWebUI() {
     .name("Source Code");
   gui.close();
 }
-
-let toggle = false;
 
 document.getElementById("filePicker").addEventListener("change", function () {
   if (this.files[0] === undefined) return;
