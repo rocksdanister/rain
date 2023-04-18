@@ -67,6 +67,14 @@
     "type": "slider",
     "value": 1
   },
+  "displayScaling": {
+    "max": 2,
+    "min": 0.1,
+    "step": 0.01,
+    "text": "Scaling",
+    "type": "slider",
+    "value": 1
+  },
   "animateChk": {
     "type": "checkbox",
     "value": false,
