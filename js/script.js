@@ -3,14 +3,18 @@ let clock = new THREE.Clock();
 const gui = new dat.GUI();
 
 let scene, camera, renderer, material;
-let settings = { fps: 30, parallaxVal: 1 };
+let settings = { fps: 30, scale: 1.0, parallaxVal: 1 };
 let videoElement;
+
+//custom events
+const sceneLoadedEvent = new Event("sceneLoaded");
 
 async function init() {
   renderer = new THREE.WebGLRenderer({
     antialias: false,
   });
-  renderer.setSize(window.innerWidth, window.innerHeight, 2);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(settings.scale);
   container.appendChild(renderer.domElement);
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -42,21 +46,39 @@ async function init() {
         `,
   });
   material.fragmentShader = await (await fetch("shaders/rain.frag")).text();
+  resize();
 
-  new THREE.TextureLoader().load("media/image.jpg", function (tex) {
-    material.uniforms.u_tex0_resolution.value = new THREE.Vector2(tex.image.width, tex.image.height);
-    material.uniforms.u_tex0.value = tex;
-  });
+  material.uniforms.u_tex0_resolution.value = new THREE.Vector2(1920, 1080);
+  material.uniforms.u_tex0.value = await new THREE.TextureLoader().loadAsync("media/image.webp");
 
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 1, 1), material);
   scene.add(quad);
+
+  window.addEventListener("resize", (e) => resize());
+  render();
+  datUI();
+
+  document.dispatchEvent(sceneLoadedEvent);
 }
 
-window.addEventListener("resize", function (e) {
-  renderer.setSize(window.innerWidth, window.innerHeight, 2);
+function setScale(value) {
+  if (settings.scale == value) return;
 
-  material.uniforms.u_resolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
-});
+  settings.scale = value;
+  renderer.setPixelRatio(settings.scale);
+  material.uniforms.u_resolution.value = new THREE.Vector2(
+    window.innerWidth * settings.scale,
+    window.innerHeight * settings.scale
+  );
+}
+
+function resize() {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  material.uniforms.u_resolution.value = new THREE.Vector2(
+    window.innerWidth * settings.scale,
+    window.innerHeight * settings.scale
+  );
+}
 
 function render() {
   setTimeout(function () {
@@ -71,8 +93,6 @@ function render() {
 }
 
 init();
-render();
-createWebUI();
 
 //lively api
 //docs: https://github.com/rocksdanister/lively/wiki/Web-Guide-IV-:-Interaction
@@ -144,6 +164,9 @@ function livelyPropertyListener(name, val) {
     case "fpsLock":
       settings.fps = val ? 30 : 60;
       break;
+    case "displayScaling":
+      setScale(val);
+      break;  
     case "debug":
       if (val) gui.show();
       else gui.hide();
@@ -152,12 +175,14 @@ function livelyPropertyListener(name, val) {
 }
 
 //web
-function createWebUI() {
+function datUI() {
   let rain = gui.addFolder("Rain");
   let bg = gui.addFolder("Background");
+  let perf = gui.addFolder("Performance");
   let misc = gui.addFolder("More");
   rain.open();
   bg.open();
+  perf.open();
   misc.open();
   rain.add(material.uniforms.u_intensity, "value", 0, 1, 0.01).name("Intensity");
   rain.add(material.uniforms.u_speed, "value", 0, 10, 0.01).name("Speed");
@@ -179,7 +204,14 @@ function createWebUI() {
   bg.add(material.uniforms.u_texture_fill, "value").name("Scale to Fill");
   bg.add(material.uniforms.u_panning, "value").name("Panning");
   bg.add(material.uniforms.u_post_processing, "value").name("Post Processing");
-  misc.add(settings, "fps", 15, 120, 15).name("FPS");
+  perf.add(settings, "fps", 15, 120, 15).name("FPS");
+  let tempScale = { value: settings.scale }; //don't update global value
+  perf
+    .add(tempScale, "value", 0.1, 2, 0.01)
+    .name("Scale")
+    .onChange(function () {
+      setScale(tempScale.value);
+    });
   misc
     .add(
       {
