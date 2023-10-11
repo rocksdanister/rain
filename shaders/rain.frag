@@ -177,17 +177,27 @@ void main() {
         col /= float(u_blur_iterations);
     }
 
-    t = (T + 3.) * .5;			// make time sync with first lightnoing
+    t = (T + 3.) * 1.;			// make time sync with first lightnoing
     if(u_post_processing) {
         //float colFade = sin(t * .2) * .5 + .5;
-        col *= mix(vec3(1.), vec3(.8, .9, 1.3), 1.);	// subtle color shift
+        col *= mix(vec3(1.), vec3(.8, .9, 1.3), 0.5);	// subtle color shift
     }
-    float fade = S(0., 10., T);							// fade in at the start
 
     if(u_lightning) {
-        float lightning = sin(t * sin(t * 10.));				// lighting flicker
-        lightning *= pow(max(0., sin(t + sin(t))), 10.);		// lightning flash
-        col *= 1. + lightning * fade * mix(1., .1, 0.);	// composite lightning
+        float fade = S(0., 10., T);	// fade in at the start
+
+        float lightning = 1.;				// lighting flicker
+        lightning *= pow(max(0., sin(t+sin(t))), 20.);		// lightning flash
+        col *= 1.+lightning*fade*mix(1., .1, 0.1);	// composite lightning
+
+        //lightning *= pow(max(0., sin(t + sin(t)*2.)), 10.);		// lightning flash
+        //col *= 1. + lightning * fade * mix(0.1, 0.01, 5.);	// composite lightning
+        //col.z = col.z * ( 1. + lightning * fade);// * mix(0.1, 1., 5.);)
+        //col.x = col.x * ( 1. + lightning * fade);// * mix(0.1, 1., 5.);)
+        //col.y = col.y * ( 1. + lightning/2. * fade);// * mix(0.1, 1., 5.);)
+
+        //float val = lightning * fade;
+        //col = col * (1. + vec3(val*0.6, val*0.82, val*0.9));
     }
     col *= 1. - dot(UV -= .5, UV) * 1.; // vignette
 
