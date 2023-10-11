@@ -278,7 +278,7 @@ document.addEventListener("mousemove", function (event) {
 
 //helpers
 function getExtension(filePath) {
-  return filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase() || filePath;
+  return filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length) || filePath;
 }
 
 function createVideoElement(src) {
