@@ -7,7 +7,7 @@ let isPaused = false,
 let devicePixelRatio = window.devicePixelRatio || 1;
 
 let scene, camera, renderer, material;
-let settings = { fps: 30, scale: 1.0, parallaxVal: 1 };
+let settings = { fps: 30, scale: 1.0, parallaxVal: 1, parallaxStrength: 1, parallaxDistance: 90, parallaxDamp: 0.07 };
 let videoElement;
 
 //custom events
@@ -187,6 +187,15 @@ function livelyPropertyListener(name, val) {
     case "parallaxIntensity":
       settings.parallaxVal = val;
       break;
+    case "parallaxStrength":
+      settings.parallaxStrength = val;
+      break;
+    case "parallaxDistance":
+      settings.parallaxDistance = val;
+      break;
+    case "parallaxDamp":
+      settings.parallaxDamp = val;
+      break;
     case "fpsLock":
       settings.fps = val ? 30 : 60;
       break;
@@ -292,15 +301,36 @@ document.getElementById("filePicker").addEventListener("change", function () {
   }
 });
 
-//parallax
-document.addEventListener("mousemove", function (event) {
-  if (settings.parallaxVal == 0) return;
+// parallax
+if (settings.parallaxVal !== 0) {
 
-  const x = (window.innerWidth - event.pageX * settings.parallaxVal) / 90;
-  const y = (window.innerHeight - event.pageY * settings.parallaxVal) / 90;
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
 
-  container.style.transform = `translateX(${x}px) translateY(${y}px) scale(1.09)`;
-});
+  document.addEventListener("mousemove", function (event) {
+    targetX = (window.innerWidth  - event.pageX * settings.parallaxVal * settings.parallaxStrength) / settings.parallaxDistance;
+    targetY = (window.innerHeight - event.pageY * settings.parallaxVal * settings.parallaxStrength) / settings.parallaxDistance;
+  });
+
+  function animateParallax() {
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const speed = Math.hypot(dx, dy);
+    const damp = Math.min(0.35, settings.parallaxDamp + speed * 0.012);
+
+    currentX += dx * damp;
+    currentY += dy * damp;
+
+    container.style.transform =
+      `translateX(${currentX}px) translateY(${currentY}px) scale(1.06)`;
+
+    requestAnimationFrame(animateParallax);
+  }
+
+  animateParallax();
+}
 
 //helpers
 function getExtension(filePath) {
