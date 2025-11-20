@@ -61,9 +61,33 @@
     "value": 50
   },
   "parallaxIntensity": {
-    "max": 5,
+    "max": 7,
     "min": 0,
     "text": "Parallax",
+    "type": "slider",
+    "value": 1
+  },
+  "parallaxStrength": {
+    "max": 1,
+    "min": 0.20,
+    "step": 0.1,
+    "text": "Mouse Sensitivity",
+    "type": "slider",
+    "value": 1
+  },
+  "parallaxDistance": {
+    "max": 110,
+    "min": 50,
+    "step": 5,
+    "text": "Distance",
+    "type": "slider",
+    "value": 90
+  },
+  "parallaxDamp": {
+    "max": 1,
+    "min": 0.07,
+    "step": 0.1,
+    "text": "Damping",
     "type": "slider",
     "value": 1
   },
